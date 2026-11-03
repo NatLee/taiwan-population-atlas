@@ -37,6 +37,13 @@
 
 <img src="docs/images/screenshot-mobile.png" alt="手機版：2020 年 6 月的總增加率" width="300">
 
+<details>
+<summary>2017 年黑客松版本的樣子</summary>
+
+![2017 年的版本：綠到紅的色階、右側圖示選單、下方時間滑桿](docs/images/2017-version.png)
+
+</details>
+
 ## 快速上手
 
 需要 Node.js 22.12 以上（CI 用 Node 24）。

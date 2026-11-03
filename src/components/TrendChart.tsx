@@ -6,21 +6,13 @@ import type { MetricDef } from '../domain/metrics.ts';
 import { formatPeriod, yearOf, type Period } from '../domain/periods.ts';
 import { useElementSize } from '../hooks/useElementSize.ts';
 import { formatCompact, formatValue } from '../lib/format.ts';
+import type { TrendLine } from '../lib/trend.ts';
 
-export interface TrendSeries {
-  key: string;
-  label: string;
-  /** Stroke colour (a CSS colour or var()). */
-  color: string;
-  values: readonly (number | null)[];
-  /** `reference` = the whole-country line, drawn thinner. */
-  role?: 'focus' | 'compare' | 'reference';
-}
 
 interface Props {
   metric: MetricDef;
   periods: readonly Period[];
-  series: readonly TrendSeries[];
+  series: readonly TrendLine[];
   current: Period;
   onPick: (period: Period) => void;
 }
@@ -54,7 +46,9 @@ export function TrendChart({ metric, periods, series, current, onPick }: Props) 
       .filter((e): e is typeof e & { value: number } => e.value !== null && e.value !== undefined);
 
     const all = series.flatMap((s) => s.values.filter((v): v is number => v !== null));
-    const [lo = 0, hi = 1] = extent(all);
+    const [lo, hi] = extent(all);
+    // Nothing to draw: say so below instead of inventing a 0–1 axis.
+    if (lo === undefined || hi === undefined) return null;
     const domain = metric.scale === 'diverging' ? [Math.min(lo, 0), Math.max(hi, 0)] : [lo, hi];
     const y = scaleLinear().domain(domain).nice(4).range([HEIGHT - MARGIN.bottom, MARGIN.top]);
 
@@ -78,6 +72,7 @@ export function TrendChart({ metric, periods, series, current, onPick }: Props) 
     return { x, y, xTicks, yTicks: y.ticks(4), draw, ends, labelsFit };
   }, [width, periods, series, metric.scale]);
 
+  const hasData = series.some((s) => s.values.some((v) => v !== null));
   const currentIndex = periods.indexOf(current);
   const shownIndex = hoverIndex ?? null;
 
@@ -103,6 +98,9 @@ export function TrendChart({ metric, periods, series, current, onPick }: Props) 
         </ul>
       )}
       <div ref={box} className="relative" style={{ height: HEIGHT }}>
+        {!hasData && (
+          <p className="flex h-full items-center justify-center text-sm text-ink-2">尚無資料可以畫成趨勢圖。</p>
+        )}
         {layout && (
           <svg
             width={width}

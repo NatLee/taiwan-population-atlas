@@ -3,6 +3,7 @@ import type { ThemeName } from '../lib/palette.ts';
 import { readPreference, writePreference } from './storage.ts';
 
 export type ThemePreference = 'system' | ThemeName;
+// index.html reads the same key before React starts, so the first paint is already in the right theme.
 const KEY = 'theme';
 const DARK_QUERY = '(prefers-color-scheme: dark)';
 

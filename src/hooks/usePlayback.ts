@@ -28,19 +28,25 @@ export function usePlayback(periods: readonly Period[], current: Period, onStep:
     const timer = window.setTimeout(() => {
       const next = periods[index + 1];
       if (next) onStep(next);
+      // Stop on arrival, so a later metric change (new, longer period list) does not resume playback.
+      if (index + 1 >= periods.length - 1) setPlaying(false);
     }, stepInterval(periods.length, speed));
     return () => window.clearTimeout(timer);
   }, [playing, atEnd, index, periods, speed, onStep]);
 
   const toggle = () => {
-    if (!playing && atEnd) {
+    if (playing) {
+      setPlaying(false);
+      return;
+    }
+    if (atEnd) {
       // Pressing play on the last period starts over, like a video player.
       const first = periods[0];
       if (first) onStep(first);
     }
-    setPlaying((p) => !p);
+    setPlaying(true);
   };
   const cycleSpeed = () =>
     setSpeed((s) => PLAYBACK_SPEEDS[(PLAYBACK_SPEEDS.indexOf(s) + 1) % PLAYBACK_SPEEDS.length] ?? 1);
-  return { playing: playing && !atEnd, toggle, stop: () => setPlaying(false), speed, cycleSpeed };
+  return { playing, toggle, stop: () => setPlaying(false), speed, cycleSpeed };
 }

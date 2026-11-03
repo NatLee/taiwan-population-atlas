@@ -1,103 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1 ,maximum-scale=1, user-scalable=no">
-    <title>人口變動</title>
-    <!-- libraries-->
-    <script type="text/javascript" src="lib/jquery.min.js"></script>
-    <script type="text/javascript" src="lib/d3.v3.min.js"></script>
-    <script type="text/javascript" src="lib/topojson.v1.min.js"></script>
-    <!-- ion.rangeSlider-->
-    <script type="text/javascript" src="js/ion.rangeSlider.js"></script>
-    <script type="text/javascript" src="js/ion.rangeSlider.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/ion.rangeSlider.css">
-    <link rel="stylesheet" type="text/css" href="css/normalize.css">
-    <link rel="stylesheet" type="text/css" href="css/ion.rangeSlider.skinFlat.css">
-    <!-- css icon -->
-    <link rel="stylesheet" href="css/icon.css">
-    <!-- google font family api-->
-    <link rel="stylesheet" href="css/Vampiro.css">
-    <!-- custom files-->
-    <link rel="stylesheet" type="text/css" href="css/index.css">
-    <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
-</head>
-
-<body>
-    <div class="header">
-        <div id="data_type">人口變遷視覺分析工具</div>
-    </div>
-    <div class="main">
-        <div class="tabEle">
-            <div class="tab">
-                <button class="county tablinks" name="county" onclick="openNews(event, 'countyStr')" id="defaultOpen">-</button>
-                <button class="others tablinks" name="others" onclick="openNews(event, 'othersStr')">當期焦點新聞</button>
-            </div>
-            <div id="countyStr" name="display" class="tabcontent">
-                <!--<span onclick="this.parentElement.style.height ='0%'" class="topright">x</span>-->
-                <h3>-</h3>
-                <p>請點選地圖任意地方，選取一個縣市</p>
-            </div>
-            <div id="othersStr" class="tabcontent">
-                <!--<span onclick="this.parentElement.style.height ='0%'" class="topright">x</span>-->
-                <h3>-</h3>
-                <p>很抱歉，尚無重大新聞。</p>
-            </div>
-        </div>
-        <div class="iconsEle noselect">
-            <div class="hintHover noselect"><a class="hintText"></a>
-                <div class="triangle noselect"></div>
-            </div>
-            <div class="hintSelected noselect"><a class="selectedText" value="0">人口數(人)</a>
-                <div class="triangle noselect"></div>
-            </div>
-            <ul style="display: inherit; margin: 0;">
-                <i class="material-icons icon noselect" title="人口數(人)" onclick="setDataByIndex(this)" value="0">person</i>
-                <i class="material-icons icon noselect" title="總增加率" onclick="setDataByIndex(this)" value="1">group_add</i>
-                <i class="material-icons icon noselect" title="自然增加率" onclick="setDataByIndex(this)" value="2">child_care</i>
-                <i class="material-icons icon noselect" title="社會增加率" onclick="setDataByIndex(this)" value="3">business_center</i>
-                <i class="material-icons icon noselect" title="可支配所得" onclick="setDataByIndex(this)" value="4">attach_money</i>
-                <i class="glyphicon icon noselect" title="每戶儲蓄" onclick="setDataByIndex(this)" value="5">&#xe225;</i>
-            </ul>
-        </div>
-        <div class="ctrlBtn leftButton noselect" value="less" unselectable="on" onclick="contolSliderEvent(this)"> </div>
-        <div class="ctrlBtn rightButton noselect" value="add" unselectable="on" onclick="contolSliderEvent(this)"> </div>
-        <div class="mapEle">
-            <svg id="map" width="100%" height="99%" viewBox="0 25 900 350" preserveAspectRatio="xMidYMid">
-            </svg>
-        </div>
-        <div id="info">
-            <div id="name"></div>
-            <div id="case"></div>
-        </div>
-    </div>
-    <div class="footer">
-        <div class="sliderEle">
-            <div style="width:90%;position: relative;margin: auto;">
-                <input type="text" id="dateSlider" name="dateSlider" value="" />
-            </div>
-        </div>
-        <div class="colorBarEle">
-            <svg width="100%" height="55px" viewBox="0 0 400 100" preserveAspectRatio="xMidYMid">
-                <rect width="140%" height="23" x="-110" y="46" stroke="#FFF" fill="url(#Ruler)"></rect>
-                <text x="-110" y="25" style="font-size:36px;font-family: Optima,Segoe,Segoe UI,Candara,Calibri,Arial,sans-serif;font-weight: bold">
-                    <tspan>Low</tspan>
-                    <tspan>　　　　　　　　　　　</tspan>
-                    <tspan>High</tspan>
-                </text>
-                <linearGradient id="Ruler" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="5%" stop-color="#00FF00" />
-                    <stop offset="95%" stop-color="#FF0000" />
-                </linearGradient>
-            </svg>
-        </div>
-        <div class="mobileInfoEle"></div>
-    </div>
-    <div class="bg_mask">
-
-    </div>
-</body>
-
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="臺灣 22 縣市的人口增減與家庭收支，按月、按年在地圖上播放。2017 嘉義黑客松作品，2026 重寫。" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>人口變遷視覺分析工具 · Taiwan Population Atlas</title>
+    <script>
+      // Apply the saved theme before the first paint so dark mode does not flash white.
+      try {
+        var saved = localStorage.getItem('theme');
+        var dark = saved === 'dark' || (saved !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>這個地圖需要 JavaScript 才能顯示。</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

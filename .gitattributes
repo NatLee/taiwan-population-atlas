@@ -1,0 +1,4 @@
+# Downloaded inputs are stored byte for byte, so their SHA-256 in manifest.json stays valid.
+data/sources/** -text
+*.wav binary
+*.png binary

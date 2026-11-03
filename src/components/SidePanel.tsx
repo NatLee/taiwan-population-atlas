@@ -8,7 +8,8 @@ import { formatChange, formatDifference, formatValue } from '../lib/format.ts';
 import { MAX_COMPARED } from '../lib/palette.ts';
 import type { PeriodEvents, RankedCounty } from '../lib/series.ts';
 import { NewsList } from './NewsList.tsx';
-import { TrendChart, type TrendSeries } from './TrendChart.tsx';
+import { trendLines } from '../lib/trend.ts';
+import { TrendChart } from './TrendChart.tsx';
 
 export type PanelTab = 'county' | 'news' | 'ranking';
 
@@ -96,17 +97,7 @@ function CountyTab({ metric, series, period, county, compare, colors, ranked, ev
   const full = compare.filter(Boolean).length >= MAX_COMPARED;
   const nationalLabel = DATASETS[metric.dataset].nationalLabel;
 
-  const trend: TrendSeries[] = [];
-  compare.forEach((code, i) => {
-    const c = code ? countyByCode(code) : undefined;
-    const vals = code ? values[code] : undefined;
-    if (c && code) trend.push({ key: code, label: c.name, color: colors[i] ?? 'var(--ink)', values: vals ?? series.periods.map(() => null), role: code === county ? 'focus' : 'compare' });
-  });
-  if (info && slot < 0) {
-    trend.unshift({ key: info.code, label: info.name, color: 'var(--ink)', values: values[info.code] ?? series.periods.map(() => null), role: 'focus' });
-  }
-  // A national total (23 million people) would flatten every county line; averages and rates compare fine.
-  if (values[NATIONAL] && metric.national === 'average') trend.push({ key: NATIONAL, label: nationalLabel, color: 'var(--muted)', values: values[NATIONAL], role: 'reference' });
+  const trend = trendLines({ metric, series, county, compare, colors });
 
   return (
     <div className="flex flex-col gap-4">
